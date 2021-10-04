@@ -1,0 +1,28 @@
+@charset "ISO-8859-1";
+
+.bg-vermelho {
+	background-color: #FA5858 !important;
+}
+
+.cor-texto {
+	color: black !important;
+}
+
+#div-espectro {
+	text-align: center;
+	height: 35%;
+}
+
+#espectro {
+	height: 75%;
+}
+
+.direita {
+	text-align: right !important;
+}
+
+.link {
+	text-decoration: none !important;
+	color: black;
+	font-size: 17px;
+}

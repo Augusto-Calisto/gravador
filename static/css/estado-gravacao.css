@@ -1,0 +1,23 @@
+@charset "ISO-8859-1";
+
+.fonte {
+	font-size: 70px !important;
+}
+
+.gravando {
+	background-image: url('../images/rec.gif');
+	background-size: 200px 100px;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 200px;
+    height: 100px;
+}
+
+.pausado {
+    background-image: url('../images/pause.png');
+    background-size: 100px 100px;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 200px;
+    height: 100px;
+}
