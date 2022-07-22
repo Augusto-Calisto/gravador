@@ -49,9 +49,9 @@ btnPausar.addEventListener('click', function() {
 		
 		clearInterval(controladorBase64);
 		
-		btnPausar.textContent = "Retornar ('F6', '*')";
+		btnPausar.innerHTML = `<i class="bi bi-play-fill"></i> Retornar ('F6', '*')`;
 		
-        btnPausar.setAttribute("class", "btn btn-success btn-lg");
+        btnPausar.setAttribute("class", "btn btn-success");
         
         adicionarClassePausado(); // Classe Pausado no CSS
         
@@ -60,11 +60,11 @@ btnPausar.addEventListener('click', function() {
 		
 		iniciarCronometro();
 
-        btnPausar.textContent = "Pausar ('F6', '*')";
+        btnPausar.innerHTML = `<i class="bi bi-pause-fill"></i> Pausar ('F6', '*')`;
         
         controladorBase64 = setInterval(() => {armazenarAudio()}, 10000);
         
-        btnPausar.setAttribute("class", "btn btn-primary btn-lg");
+        btnPausar.setAttribute("class", "btn btn-primary");
         
         adicionarClasseGravando(); // Classe Gravando no CSS
 	}
@@ -103,27 +103,3 @@ function armazenarAudio() {
 		inserirOuAtualizarDados(blob); // Armazenando no IndexedDB
 	});
 }
-
-document.addEventListener('keydown', function(event) {
-    let codigo = event.keyCode || event.which || event.charCode;
-    
-    switch(true) {
-        case(codigo == 111 || codigo == 116):
-            $('#btn-iniciar').click(); // F5 ou NumPad '/'
-        break;
-
-        case(codigo == 106 || codigo == 117):
-            $('#btn-pausar').click(); // F6 ou NumPad '*'
-        break;
-
-        case(codigo == 109 || codigo == 118):
-            $('#btn-salvar').click(); // F7 ou NumPad '-'
-        break;
-
-        default:
-            event.preventDefault();
-        break;
-    }
-	
-	event.preventDefault();
-});

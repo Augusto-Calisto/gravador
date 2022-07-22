@@ -1,7 +1,5 @@
-@charset "ISO-8859-1";
-
 .bg-vermelho {
-	background-color: #FA5858 !important;
+	background-color: rgb(248, 63, 63) !important;
 }
 
 .cor-texto {

@@ -38,5 +38,5 @@ btnDownload.addEventListener('click', function() {
 		audio.remove();
 	}, 2000);
 
-	createDB();
+	location.reload();
 });

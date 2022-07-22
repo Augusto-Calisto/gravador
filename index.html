@@ -1,14 +1,16 @@
 <html>
     <head>
-    	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    	
-        <meta charset="utf-8" />
-        
+		<meta charset="utf-8" />
+
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    	        
         <title> Gravador Online </title>
 
 		<link href="./static/images/microphone.png" rel="icon" type="image/x-icon" />
 		
-		<!-- Css -->
+		<!-- CSS -->
         <link rel="stylesheet" href="./static/css/audio.css" />
         
         <link rel="stylesheet" href="./static/css/estado-gravacao.css" />
@@ -16,8 +18,11 @@
         <link rel="stylesheet" href="./static/css/upload.css" />
 
 		<link rel="stylesheet" href="./static/css/responsividade.css" />
-            
-    	<!-- Bootstrap 4 -->
+
+		<!-- Bootstrap Icons -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css" integrity="sha384-eoTu3+HydHRBIjnCVwsFyCpUDZHZSFKEJD0mc3ZqSBSb6YhZzRHeiomAUWCstIWo" crossorigin="anonymous">
+
+    	<!-- Bootstrap  -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 		
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -25,21 +30,22 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-		
-		<!-- External Libraries -->
+				
+		<!-- Biblioteca - Recorder.js -->
 		<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
 		
+		<!-- Biblioteca - Espectro -->
 		<script src="https://cdn.jsdelivr.net/npm/oscilloscope@1.x"></script>
     </head>
 
     <body>
-		<nav class="navbar navbar-expand-lg navbar-light bg-vermelho">
+		<nav class="navbar navbar-expand-lg navbar-light bg-vermelho mb-4">
     		<div class="d-flex flex-grow-1">
 				<a class="navbar-brand-two mx-auto d-inline-block">
 					<img src="./static/images/logo.ico" width="45" height="45" class="align-botton" />
 				</a>
         		
-				<a class="navbar-brand d-lg-inline-block ml-2">
+				<a class="navbar-brand d-lg-inline-block text-white ml-2">
             		Gravador
         		</a>
     		</div>
@@ -89,44 +95,46 @@
 			<canvas id="espectro" class="container"></canvas>
 		</div>
         
-        <div class="container mb-5 mr-5">
-			<div class="row justify-content-between">
-				<div class="col-lg-3 col-md-4 col-sm-12">
-					<button type="button" class="btn btn-success btn-lg" id="btn-iniciar"> 
-						Iniciar ('F5', '/') 
+        <div class="container-fluid mb-5 mr-5">
+			<div class="row text-center text-sm">
+				<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+					<button type="button" class="btn btn-success mb-4" id="btn-iniciar" title="Começar a gravar"> 
+						<i class="bi bi-mic-fill"></i> Iniciar ('F5', '/')
 					</button>
 				</div>
 				
-				<div class="col-lg-3 col-md-4 col-sm-12">
-					<button type="button" class="btn btn-primary btn-lg" id="btn-pausar" disabled> 
-						Pausar ('F6', '*') 
+				<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+					<button type="button" class="btn btn-primary mb-4" id="btn-pausar" title="Pausar/Continuar gravação" disabled> 
+						<i class="bi bi-pause-fill"></i> Pausar ('F6', '*') 
 				 	</button>
 				</div>
 
-				<div class="col-lg-3 col-md-4 col-sm-12">
-					<button type="button" class="btn btn-secondary btn-lg" id="btn-salvar" disabled> 
-						Salvar ('F7', '-') 
+				<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+					<button type="button" class="btn btn-secondary" id="btn-salvar" title="Finalizar gravação" disabled> 
+						<i class="bi bi-check-lg"></i> Encerrar ('F7', '-') 
+					</button>
+				</div>
+
+				<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 text-center">
+					<button type="button" class="btn btn-dark" id="btn-voltar" hidden> 
+						<i class="bi bi-arrow-left-short"></i> Voltar 
 					</button>
 				</div>
 			</div>
-
-			<div class="col-lg-3 col-md-6 col-sm-12">
-				<button type="button" class="btn btn-dark btn-lg" id="btn-voltar" hidden> 
-					Voltar 
-				</button>
-			</div>
         </div>
 
-        <script type="text/javascript" src="./static/js/estado-gravacao.js"></script>
+        <script src="./static/js/estado-gravacao.js"></script>
         
-        <script type="text/javascript" src="./static/js/time.js"></script>
+        <script src="./static/js/cronometro.js"></script>
         
-        <script type="text/javascript" src="./static/js/upload-audio.js"></script>
+        <script src="./static/js/upload.js"></script>
         
-        <script type="text/javascript" src="./static/js/banco.js"></script>
-		
-		<script type="text/javascript" src="./static/js/espectro.js"></script>
+        <script src="./static/js/indexedDB.js"></script>
 
-        <script type="text/javascript" src="./static/js/config-audio.js"></script>
+		<script src="./static/js/preload.js"></script>
+		
+		<script src="./static/js/espectro.js"></script>
+
+        <script src="./static/js/app.js"></script>
     </body>
 </html>

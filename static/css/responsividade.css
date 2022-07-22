@@ -1,5 +1,30 @@
 @media(max-width: 640px) {
-    body {
-        background-color: aquamarine;
+    .fonte {
+        font-size: 45px;
+    }
+
+    .gravando {
+        background-size: 125px 60px;
+        width: 125px;
+        height: 60px;
+    }
+
+    .pausado {
+        background-size: 75px 70px;
+        width: 75px;
+        height: 70px;
+    }
+
+    #div-espectro {
+        height: 200px;
+    }
+
+    #espectro {
+        height: 195px;
+        padding-bottom: 70px;
+    }
+
+    #btn-iniciar, #btn-pausar, #btn-salvar {
+        margin-bottom: 15px;
     }
 }
