@@ -1,105 +1,84 @@
-/* Variáveis para configurar a gravação de Áudio */
-var gravar;
+let controladorSetInterval;
 
-var btnIniciar = document.getElementById('btn-iniciar');
-var btnPausar = document.getElementById('btn-pausar');
-var btnSalvar = document.getElementById('btn-salvar');
-var btnVoltar = document.getElementById('btn-voltar');
-
-var gumStream;
-var controladorBase64;
-
-btnIniciar.addEventListener('click', function() {
-	navigator.mediaDevices.getUserMedia({audio: true})
-  		.then(function(stream) {
-			let audioContext = new (window.AudioContext || window.webkitAudioContext)({
-				sampleRate: 16000
-			});
-			
-			gumStream = stream;
-			
-			controladorBase64 = setInterval(() => {armazenarAudio()}, 10000); // A cada 10 segundos chama a função 'armazenarAudio()'
-						
-			let input = audioContext.createMediaStreamSource(stream);
-
-			gerarEspectroAudio(input);
-
-			gravar = new Recorder(input, {numChannels: 1}),
-			
-			adicionarClasseGravando();
-			
-			gravar.record();
-			
-			iniciarCronometro();
-			
-		    btnPausar.disabled = false;
-		    
-		    btnSalvar.disabled = false;
-		
-		    btnIniciar.remove();
-		    
-	}).catch(() => alert("ATENÇÃO\n\nVerifique se você permitiu ou conectou o microfone e depois recarregue a página"));
-});
-
-btnPausar.addEventListener('click', function() {
-	if(gravar.recording) {
-		gravar.stop(); // Pausar
-		
-		pausarCronometro();
-		
-		clearInterval(controladorBase64);
-		
-		btnPausar.innerHTML = `<i class="bi bi-play-fill"></i> Retornar ('F6', '*')`;
-		
-        btnPausar.setAttribute("class", "btn btn-success");
-        
-        adicionarClassePausado(); // Classe Pausado no CSS
-        
-	} else {
-		gravar.record(); // Continuar
-		
-		iniciarCronometro();
-
-        btnPausar.innerHTML = `<i class="bi bi-pause-fill"></i> Pausar ('F6', '*')`;
-        
-        controladorBase64 = setInterval(() => {armazenarAudio()}, 10000);
-        
-        btnPausar.setAttribute("class", "btn btn-primary");
-        
-        adicionarClasseGravando(); // Classe Gravando no CSS
-	}
-});
-
-btnSalvar.addEventListener('click', function() {
-	pararCronometro();
-	
-	gravar.stop();
-	
-	abrirOverlay();
-	
-	gumStream.getAudioTracks()[0].stop();
-	
-    btnPausar.remove();
-	
-	btnSalvar.remove();
-    
-    clearInterval(controladorBase64);
-    
-    removerDivEstadoGravacao();
-	
-	btnVoltar.hidden = false;
-	
-    gravar.exportWAV(function(blob) {
-		converterBase64(blob);
-	});
-});
-
-btnVoltar.addEventListener('click', function() {
-	location.reload(true);
-});
-
-function armazenarAudio() {
-	gravar.exportWAV(function(blob) {
-		inserirOuAtualizarDados(blob); // Armazenando no IndexedDB
-	});
+function createThreadArmazenarBlob() {
+    controladorSetInterval = setInterval(() => gravador.backupBlob(), 10000);
 }
+
+function stopThreadArmazenarBlob() {
+    clearInterval(controladorSetInterval);
+}
+
+$("#btn-iniciar").on("click", function() {   
+    $("#estado-gravacao").prop("hidden", false);
+
+    $("#estado-gravacao").addClass("gravando");
+
+    gravador.iniciar();
+
+    createThreadArmazenarBlob();
+
+    cronometro.iniciar();
+
+    $("#btn-pausar").prop("disabled", false);
+
+    $("#btn-salvar").prop("disabled", false);
+
+    $(this).remove();
+})
+
+$("#btn-pausar").on("click", function() {
+    if(gravador.isGravando()) {
+        cronometro.pausar();
+
+        gravador.pausar();
+
+        stopThreadArmazenarBlob()
+
+		$(this).html(`<i class="bi bi-play-fill"></i> Retornar ('F6', '*')`);
+
+        $(this).removeClass("btn-primary");
+
+        $(this).addClass("btn btn-success");
+
+        $("#estado-gravacao").removeClass("gravando");
+
+        $("#estado-gravacao").addClass("pausado");
+
+    } else {
+        gravador.continuar();
+		
+		cronometro.iniciar();
+
+        createThreadArmazenarBlob();
+
+        $(this).html(`<i class="bi bi-pause-fill"></i> Pausar ('F6', '*')`);
+
+        $(this).removeClass("btn-success");
+        
+        $(this).addClass("btn btn-primary");
+        
+        $("#estado-gravacao").removeClass("pausado");
+
+        $("#estado-gravacao").addClass("gravando");
+    }
+})
+
+$("#btn-salvar").on("click", function() {
+    cronometro.parar();
+	
+	gravador.finalizar();
+
+    stopThreadArmazenarBlob();
+			
+    $("#btn-pausar").remove();
+	
+	$(this).remove();
+        
+    $("#estado-gravacao").remove();
+	
+	$("#btn-voltar").prop("hidden", false);
+})
+
+$("#btn-voltar").on("click", function() {
+    location.reload();
+})

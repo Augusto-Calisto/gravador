@@ -1,42 +1,35 @@
-var btnDownload = document.createElement('a');
-var audio = document.createElement('audio');
+let btnDownload = document.createElement("a");
+let audio = document.createElement("audio");
 
-function converterBase64(blob) {
-	/* Este método é chamado quando o btnSalvar for clicado */
+function blobToBase64(blob) {
+	$("#upload").addClass("open-overlay");
 	
-	let link = URL.createObjectURL(blob);
-	
-	audio.src = link;
-	
-	btnDownload.textContent = 'Download';
+	$(audio).prop("src", URL.createObjectURL(blob));
 
-	btnDownload.download = `audio_${new Date().toLocaleString()}.wav`;
+	$(btnDownload).html(`<i class="bi bi-download"></i> Baixar áudio`);
+
+	$(btnDownload).prop("title", "Baixe o áudio gravado agora")
 	
-	btnDownload.href = link;
+	$(btnDownload).prop("download", `audio_${new Date().toLocaleString()}.wav`);
+
+	$(btnDownload).prop("href", URL.createObjectURL(blob));
+
+	$(btnDownload).addClass("btn btn-info btn-sm text-white mb-4 ml-3");
 	
-	btnDownload.setAttribute('class', 'btn btn-info btn-sm');
-		
  	audio.onloadeddata = function() {
-		fecharOverlay();
+		$("#upload").removeClass("open-overlay");
 		
-		audio.controls = true;
-		
-		document.body.appendChild(audio);
+		$(audio).prop("controls", true);
 
-		document.body.appendChild(btnDownload);
+		$("body").append(audio); // Áudio para ouvir
+
+		$("body").append(btnDownload); // Botão para baixar
+
+		$("body").append($(`<p class="ml-3"> Clique no botão <b> 'Baixar áudio' </b> e aguarde alguns instantes que a página irá recarregar!!! </p>`));
 	}
 }
 
-btnDownload.addEventListener('click', function() {
-	deleteDB();
-
-	setTimeout(() => {
-		this.remove();
-
-		console.log(this);
-	
-		audio.remove();
-	}, 2000);
-
-	location.reload();
-});
+$(btnDownload).on("click", function() {
+	idxDB.deleteDB();
+	setTimeout(() => location.reload(), 1500);
+})

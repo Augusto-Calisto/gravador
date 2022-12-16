@@ -1,59 +1,59 @@
 "use strict";
 
-var horas = 0;
-var minutos = 0;
-var segundos = 0;
+let controladorTempo;
 
-var cronometro;
+let spanHoras = $("#horas");
+let spanMinutos = $("#minutos");
+let spanSegundos = $("#segundos");
 
-var spanHoras = document.getElementById('horas');
-var spanMinutos = document.getElementById('minutos');
-var spanSegundos = document.getElementById('segundos');
+var cronometro = {
+    horas: 0,
+    minutos: 0,
+    segundos: 0,
 
-function iniciarCronometro() {
-	cronometro = setInterval(() => {timer();}, 1000);
-}
+    iniciar: function() {
+        controladorTempo = setInterval(() => this.timer(), 1000);
+    },
 
-function pausarCronometro() {
-	clearInterval(cronometro);
-}
+    pausar: function() {
+        clearInterval(controladorTempo);
+    },
 
-function pararCronometro() {
-	clearInterval(cronometro);
+    parar: function() {
+        clearInterval(controladorTempo);
 	
-	horas = 0;
-	minutos = 0;
-	segundos = 0;
+        this.horas = 0;
+        this.minutos = 0;
+        this.segundos = 0;
 
-	spanHoras.innnerHTML = "00";
-	spanMinutos.innerHTML = "00";
-	spanSegundos.innerHTML = "00";
-}
+        spanHoras.html("00");
+        spanMinutos.html("00");
+        spanSegundos.html("00");
+    },
 
-function timer() {
-    segundos++;
-	
-	if(segundos == 60) {
-		segundos = 0;
-		
-		minutos++;
-	}
-	
-	if(minutos == 60) {
-		minutos = 0;
-		
-		horas++;
-	}
-	
-	document.getElementById('horas').innerText = formataTempo(horas);
-	document.getElementById('minutos').innerText = formataTempo(minutos);
-  	document.getElementById('segundos').innerText = formataTempo(segundos);
-}
-
-function formataTempo(tempo) {
-	if(tempo >= 10) {
-		return tempo;
-	} 
-	
-	return '0' + tempo;
+    timer: function() {
+        this.segundos++;
+        
+        if(this.segundos == 60) {
+            this.segundos = 0;
+            this.minutos++;
+        }
+        
+        if(this.minutos == 60) {
+            this.minutos = 0;
+            this.horas++;
+        }
+        
+        spanHoras.html(this.formataTempo(this.horas));
+        spanMinutos.html(this.formataTempo(this.minutos));
+        spanSegundos.html(this.formataTempo(this.segundos));
+    },
+    
+    formataTempo: function(tempo) {
+        if(tempo >= 10) {
+            return tempo;
+        } 
+        
+        return `0${tempo}`;
+    }
 }

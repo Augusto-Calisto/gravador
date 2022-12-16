@@ -1,121 +1,83 @@
-let db;
-
 const NOME_BANCO = 'Gravacao';
 const NOME_TABELA = 'audios';
 
-const createDB = () => {
-	window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB;
+var idxDB = {
+    db: undefined,
 
-	if(window.indexedDB) {
-		const request = window.indexedDB.open(NOME_BANCO, 1);
-				
-		request.onsuccess = () => {
-			db = request.result; // Como o IndexedDB é assíncrono, temos que colocar listeners
-							
-			hasAudio();
-		}
-		
-		request.onerror = (event) => {
-			alert(`IndexedDB error: ${event.target.errorCode}`);
-		}
-		
-		request.onupgradeneeded = (event) => {
-			db = event.target.result;
-			
-			// Object Storage: "tabela"
-			const audio = db.createObjectStore(NOME_TABELA, {
-				keyPath: 'id', // Primary key
-				autoIncrement: true
-			});
-			
-			audio.createIndex('binario', 'binario');
+    createDB: function() {
+        window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB;
 
-			audio.createIndex('dataAtual', 'dataAtual');
+        if(window.indexedDB) {
+            const request = window.indexedDB.open(NOME_BANCO, 1);
+                    
+            request.onsuccess = () => {
+                this.db = request.result; // Como o IndexedDB é assíncrono, temos que colocar listeners               
+                this.recoveryAudio();
+            }
+            
+            request.onerror = (event) => {
+                alert(`IndexedDB error: ${event.target.errorCode}`);
+            }
+            
+            request.onupgradeneeded = (event) => {
+                this.db = event.target.result;
+                
+                const audio = this.db.createObjectStore(NOME_TABELA, {
+                    keyPath: "id",
+                    autoIncrement: true
+                });
+                
+                audio.createIndex("blob", "blob");
+                audio.createIndex("data", "data");
+            }
+        } else {
+            alert("Seu navegador não suporta o IndexedDB!!!\n\nVocê poderá utilizar o gravador, mas, não terá o recurso de recuperção do áudio, caso, tenha algum problema!");
+        }
+    },
 
-			audio.createIndex('status', 'status');
-		}
+    update: function(blobGravacao) {
+        let transacao = this.db.transaction([NOME_TABELA], "readwrite");
+        let objectStore = transacao.objectStore(NOME_TABELA);
 
-	} else {
-		alert('Seu navegador não suporta o IndexedDB!!!\n\nVocê poderá utilizar o gravador, mas, não terá o recurso de recuperção do áudio, caso, tenha algum problema!');
-	}
-}
+        objectStore.get(1).onsuccess = function(event) {
+            let registroTabela = event.target.result;
 
-var isInsert = true;
+            if(registroTabela == undefined) {
+                const audio = {
+                    blob: blobGravacao,
+                    data: new Date().toLocaleDateString()
+                }
+                
+                objectStore.add(audio); // Salvo o áudio a primeira vez
+            } else {
+                registroTabela.blob = blobGravacao;
 
-const inserirOuAtualizarDados = (binarioAudio) => {
-	const transacao = db.transaction([NOME_TABELA], 'readwrite');
-	const objeto = transacao.objectStore(NOME_TABELA);
-	
-	if(isInsert) {
-		const audio = {
-			binario: binarioAudio,
-			dataAtual: new Date().toLocaleDateString(),
-			status: false
-		};
-		
-		objeto.add(audio);
-		
-		isInsert = false;
+                objectStore.put(registroTabela); // Atualizando o áudio 
+            }
+        }
+    },
 
-	} else {
-		const requisicao = objeto.get(1);
-		
-		requisicao.onsuccess = (event) => {
-			var audio = event.target.result;
+    recoveryAudio: function() {
+        let transacao = this.db.transaction(NOME_TABELA);
+        let objectStore = transacao.objectStore(NOME_TABELA);
+        
+        objectStore.openCursor().onsuccess = (event) => {
+            const cursor = event.target.result;
+                    
+            if(cursor) {
+                if(confirm("Se este modal apareceu é porque você não baixou ou teve um problema no computador. Desejar recuperar o áudio anterior?")) {      
+                    blobToBase64(cursor.value.blob);
+                } else {
+                    this.deleteDB();
+                    this.createDB();
+                }
 
-			audio.binario = binarioAudio;
-			
-			objeto.put(audio);
-		}
-	}
-}
+                cursor.continue();
+            }
+        }
+    },
 
-const recuperarDadosAudio = () => {
-	let transacao = db.transaction(NOME_TABELA);
-	let objeto = transacao.objectStore(NOME_TABELA);
-	
-	objeto.openCursor().onsuccess = (event) => {
-		const cursor = event.target.result;
-				
-		if(cursor) {
-			let binarioAudio = cursor.value.binario;
-			
-			abrirOverlay();
-			
-			converterBase64(binarioAudio);
-			
-			cursor.continue();
-		}
-	}
-}
-
-function hasAudio() {
-	let transacao = db.transaction(NOME_TABELA);
-	let objeto = transacao.objectStore(NOME_TABELA);
-	
-	objeto.openCursor().onsuccess = (event) => {
-		const cursor = event.target.result;
-				
-		if(cursor) {
-			let baixou = cursor.value.status;
-
-			if(!baixou) {
-				if(confirm('Se este modal apareceu é porque você não baixou ou teve um problema no computador. Desejar recuperar o áudio anterior?')) {
-					recuperarDadosAudio();
-				}
-
-				deleteDB();
-				
-				createDB();
-			}
-		}
-	}
-}
-
-const deleteDB = () => {
-	window.indexedDB.deleteDatabase(NOME_BANCO);
-
-	console.log('eeee');
-
-	window.indexedDB.open(NOME_BANCO, 1);
+    deleteDB: function() {
+        window.indexedDB.deleteDatabase(NOME_BANCO);
+    }
 }
